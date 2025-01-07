@@ -11,7 +11,7 @@ session = HTMLSession()
 url = 'https://www.digitaltrends.com/computing/windows-12-may-not-happen-anytime-soon/'
 
 r = session.get(url)
-r.html.render(sleep=1, scrolldown=10)
+r.html.render(sleep=1, scrolldown=3)
 
 # Finding articles
 articles = r.html.find('div.b-single')
@@ -29,12 +29,17 @@ else:
             print("gada h1")
         
         # Extract content and link
-        newsitem_p = item.find('p', first=True)
+        newsitem_p = item.find('p')
         if newsitem_p:
+            links = []
+            for p in newsitem_p:
+                if p.absolute_links:
+                    links.extend(list(p.absolute_links))
+            
             data = {
                 'title' : newsitem_h1.text,
-                'content': newsitem_p.text,
-                'link': list(newsitem_p.absolute_links)
+                'content': [p.text for p in newsitem_p],
+                'link': links
             }
             
             information.insert_one(data)
