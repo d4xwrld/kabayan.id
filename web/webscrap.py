@@ -27,20 +27,30 @@ else:
             print(title)
         else:
             print("gada h1")
-        
-        # Extract content and link
-        newsitem_p = item.find('p')
-        if newsitem_p:
-            links = []
-            for p in newsitem_p:
-                if p.absolute_links:
-                    links.extend(list(p.absolute_links))
+        newsitem_author = item.find('section.b-personality')
+        if newsitem_author:
+            # link = newsitem_author.absolute_links
+            name = newsitem_author[0].find('a', first=True).text
+            print(name)
             
-            data = {
-                'title' : newsitem_h1.text,
-                'content': [p.text for p in newsitem_p],
-                'link': links
-            }
+        
+            
+            # Extract content and link
+            newsitem_p = item.find('p')
+            newsitem_date = item.find('time')
+            if newsitem_p:
+                links = []
+                for p in newsitem_p:
+                    if p.absolute_links:
+                        links.extend(list(p.absolute_links))
+                
+                data = {
+                    'title' : title,
+                    'author': name,
+                    'date' : newsitem_date[0].text,
+                    'content': ' '.join(p.text for p in newsitem_p),
+                    'link': links
+                }
             
             information.insert_one(data)
             print("data yang dimasukkan: {data}")
